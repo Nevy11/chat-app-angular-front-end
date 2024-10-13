@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SignUpFormService } from './sign-up-form.service';
 import { SignUp } from './sign-up';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'nevy11-sign-up-form',
@@ -32,7 +33,8 @@ export class SignUpFormComponent {
   emailForm!: FormGroup;
   constructor(
     private fb: FormBuilder,
-    private signupService: SignUpFormService
+    private signupService: SignUpFormService,
+    private router: Router
   ) {
     this.emailForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -59,6 +61,15 @@ export class SignUpFormComponent {
       };
       this.signupService.sign_up(body).subscribe((resp) => {
         console.log(resp);
+        if (resp.message === 'true') {
+          console.log(
+            `user ${this.emailForm.value['username']} is added successfuly to the system`
+          );
+          this.emailForm.reset();
+          this.router.navigate(['login']);
+        } else {
+          console.assert('username or password is invalid');
+        }
       });
     } else {
       console.log('Please fill in the fields marked red');

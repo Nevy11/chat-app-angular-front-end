@@ -3,3 +3,7 @@ export interface SignUp {
   userpassword: String;
   email: String;
 }
+
+export interface MessageReturned {
+  message: String;
+}
