@@ -1,8 +1,74 @@
-<form>
+<form [formGroup]="emailForm" (ngSubmit)="onSubmit()">
   <div style="background-color: white">
     <mat-form-field class="email-form-field">
       <mat-label>Enter your email</mat-label>
-      <input matInput placeholder="your-email-address@example.com" />
+      <input
+        matInput
+        formControlName="email"
+        placeholder="your-email-address@example.com"
+      />
+      @if (email?.hasError('required')) {
+      <mat-error>Email is required</mat-error>
+      } @if (email?.hasError('email')) {
+      <mat-error>Invalid email format</mat-error>
+      }
     </mat-form-field>
+  </div>
+
+  <div style="background-color: white">
+    <mat-form-field class="email-form-field">
+      <mat-label>Enter your username</mat-label>
+      <input matInput formControlName="username" placeholder="@smart_coder11" />
+      @if (emailForm.controls) {
+      <mat-error> username is required </mat-error>
+      }
+    </mat-form-field>
+  </div>
+  <div>
+    <mat-form-field class="email-form-field">
+      <mat-label>Enter your password</mat-label>
+      <input
+        matInput
+        formControlName="userpassword"
+        [type]="hide() ? 'password' : 'text'"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="clickEvent($event)"
+        [attr.aria-label]="'Hide password'"
+        [attr.aria-pressed]="hide()"
+      >
+        <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+      </button>
+      @if (emailForm.controls) {
+      <mat-error> password is required </mat-error>
+      }
+    </mat-form-field>
+  </div>
+  <div>
+    <mat-form-field class="email-form-field">
+      <mat-label>Re-enter your password</mat-label>
+      <input
+        matInput
+        formControlName="userpassword"
+        [type]="hide() ? 'password' : 'text'"
+      />
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="clickEvent($event)"
+        [attr.aria-label]="'Hide password'"
+        [attr.aria-pressed]="hide()"
+      >
+        <mat-icon>{{ hide() ? "visibility_off" : "visibility" }}</mat-icon>
+      </button>
+      @if (emailForm.controls) {
+      <mat-error> password is required </mat-error>
+      }
+    </mat-form-field>
+  </div>
+  <div>
+    <button mat-button type="submit">submit</button>
   </div>
 </form>
