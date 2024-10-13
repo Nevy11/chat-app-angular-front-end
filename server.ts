@@ -8,31 +8,32 @@ import bootstrap from './src/main.server';
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
   const server = express();
-  const serverDistFolder = dirname(fileURLToPath(import.meta.url));
-  const browserDistFolder = resolve(serverDistFolder, '../browser');
-  const indexHtml = join(serverDistFolder, 'index.server.html');
+  const serverDistFolder = dirname(fileURLToPath(import.meta.url)); // Server folder (SSR)
+  const browserDistFolder = resolve(serverDistFolder, '../browser'); // Browser folder (CSR)
+  const indexHtml = join(serverDistFolder, 'index.server.html'); // Path to SSR index.html
 
   const commonEngine = new CommonEngine();
 
+  // Set the view engine to HTML and use the SSR version
   server.set('view engine', 'html');
-  server.set('views', browserDistFolder);
+  server.set('views', serverDistFolder); // Use SSR views first
 
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
-  // Serve static files from /browser
-  server.get('**', express.static(browserDistFolder, {
-    maxAge: '1y',
-    index: 'index.html',
-  }));
+  // Serve static files from the browser (CSR) folder
+  server.get(
+    '*.*',
+    express.static(browserDistFolder, {
+      maxAge: '1y',
+    })
+  );
 
-  // All regular routes use the Angular engine
+  // Handle all other routes with SSR
   server.get('**', (req, res, next) => {
     const { protocol, originalUrl, baseUrl, headers } = req;
 
     commonEngine
       .render({
         bootstrap,
-        documentFilePath: indexHtml,
+        documentFilePath: indexHtml, // Use SSR index.server.html
         url: `${protocol}://${headers.host}${originalUrl}`,
         publicPath: browserDistFolder,
         providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
@@ -47,7 +48,7 @@ export function app(): express.Express {
 function run(): void {
   const port = process.env['PORT'] || 4000;
 
-  // Start up the Node server
+  // Start the Node server
   const server = app();
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
